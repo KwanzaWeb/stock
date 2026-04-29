@@ -111,6 +111,18 @@ function AuthPage() {
           </p>
         </div>
 
+        {!isSupabaseConfigured && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Backend ainda não ligado</AlertTitle>
+            <AlertDescription className="text-xs leading-relaxed">
+              Edite o ficheiro <code className="font-mono">.env</code> com o
+              <strong> Project URL</strong> e <strong>anon key</strong> do seu Supabase
+              Kwanzaweb (Dashboard → Settings → API). Depois, recarregue esta página.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <Card className="p-5">
           <Tabs value={tab} onValueChange={(v) => setTab(v as "login" | "signup")}>
             <TabsList className="grid grid-cols-2 w-full mb-4">
