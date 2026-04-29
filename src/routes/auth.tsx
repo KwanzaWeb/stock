@@ -43,6 +43,10 @@ function AuthPage() {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!isSupabaseConfigured) {
+      toast.error("Backend não configurado. Edite o ficheiro .env com as credenciais do Supabase.");
+      return;
+    }
     const fd = new FormData(e.currentTarget);
     const parsed = loginSchema.safeParse({
       email: fd.get("email"),
@@ -59,7 +63,7 @@ function AuthPage() {
       nav({ to: "/" });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Erro ao iniciar sessão";
-      toast.error(msg);
+      toast.error(msg.includes("fetch") ? "Não foi possível ligar ao servidor. Verifique o .env." : msg);
     } finally {
       setBusy(false);
     }
@@ -67,6 +71,10 @@ function AuthPage() {
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!isSupabaseConfigured) {
+      toast.error("Backend não configurado. Edite o ficheiro .env com as credenciais do Supabase.");
+      return;
+    }
     const fd = new FormData(e.currentTarget);
     const parsed = signupSchema.safeParse({
       email: fd.get("email"),
@@ -84,7 +92,7 @@ function AuthPage() {
       nav({ to: "/" });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Erro ao criar conta";
-      toast.error(msg);
+      toast.error(msg.includes("fetch") ? "Não foi possível ligar ao servidor. Verifique o .env." : msg);
     } finally {
       setBusy(false);
     }
