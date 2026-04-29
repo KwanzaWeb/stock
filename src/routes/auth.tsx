@@ -78,8 +78,8 @@ function AuthPage() {
     setBusy(true);
     try {
       await signUp(parsed.data.email, parsed.data.password, parsed.data.nomeLoja);
-      toast.success("Conta criada! Verifique o seu email.");
-      setTab("login");
+      toast.success("Conta criada! Bem-vindo.");
+      nav({ to: "/" });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Erro ao criar conta";
       toast.error(msg);
