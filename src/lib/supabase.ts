@@ -1,16 +1,31 @@
 import { createClient } from "@supabase/supabase-js";
 
-const SUPABASE_URL = import.meta.env.VITE_KWANZA_SUPABASE_URL as string;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_KWANZA_SUPABASE_ANON_KEY as string;
+const RAW_URL = (import.meta.env.VITE_KWANZA_SUPABASE_URL as string | undefined) ?? "";
+const RAW_KEY = (import.meta.env.VITE_KWANZA_SUPABASE_ANON_KEY as string | undefined) ?? "";
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+// Detecta valores placeholder (não configurados)
+const isPlaceholder =
+  !RAW_URL ||
+  !RAW_KEY ||
+  RAW_URL.includes("YOUR-PROJECT-REF") ||
+  RAW_URL.includes("your-project-ref") ||
+  RAW_KEY.includes("YOUR_ANON") ||
+  RAW_KEY.includes("your_anon");
+
+export const isSupabaseConfigured = !isPlaceholder;
+
+if (!isSupabaseConfigured && typeof window !== "undefined") {
   // eslint-disable-next-line no-console
   console.warn(
-    "Supabase Kwanzaweb not configured. Set VITE_KWANZA_SUPABASE_URL and VITE_KWANZA_SUPABASE_ANON_KEY in .env"
+    "[StockSimples] Supabase não configurado. Edite o ficheiro .env com VITE_KWANZA_SUPABASE_URL e VITE_KWANZA_SUPABASE_ANON_KEY do seu projeto Kwanzaweb."
   );
 }
 
-export const supabase = createClient(SUPABASE_URL ?? "", SUPABASE_ANON_KEY ?? "", {
+// Usa um URL fictício mas válido para evitar crash do createClient quando ainda não configurado.
+const SAFE_URL = isSupabaseConfigured ? RAW_URL : "https://placeholder.supabase.co";
+const SAFE_KEY = isSupabaseConfigured ? RAW_KEY : "placeholder-key";
+
+export const supabase = createClient(SAFE_URL, SAFE_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
