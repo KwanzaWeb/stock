@@ -4,12 +4,14 @@ import { useEffect } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
+import { isSupabaseConfigured } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Package, Loader2 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Package, Loader2, AlertCircle } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -41,6 +43,10 @@ function AuthPage() {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!isSupabaseConfigured) {
+      toast.error("Backend não configurado. Edite o ficheiro .env com as credenciais do Supabase.");
+      return;
+    }
     const fd = new FormData(e.currentTarget);
     const parsed = loginSchema.safeParse({
       email: fd.get("email"),
@@ -57,7 +63,7 @@ function AuthPage() {
       nav({ to: "/" });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Erro ao iniciar sessão";
-      toast.error(msg);
+      toast.error(msg.includes("fetch") ? "Não foi possível ligar ao servidor. Verifique o .env." : msg);
     } finally {
       setBusy(false);
     }
@@ -65,6 +71,10 @@ function AuthPage() {
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!isSupabaseConfigured) {
+      toast.error("Backend não configurado. Edite o ficheiro .env com as credenciais do Supabase.");
+      return;
+    }
     const fd = new FormData(e.currentTarget);
     const parsed = signupSchema.safeParse({
       email: fd.get("email"),
@@ -82,7 +92,7 @@ function AuthPage() {
       nav({ to: "/" });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Erro ao criar conta";
-      toast.error(msg);
+      toast.error(msg.includes("fetch") ? "Não foi possível ligar ao servidor. Verifique o .env." : msg);
     } finally {
       setBusy(false);
     }
@@ -100,6 +110,18 @@ function AuthPage() {
             Gestão de stock para o seu negócio
           </p>
         </div>
+
+        {!isSupabaseConfigured && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Backend ainda não ligado</AlertTitle>
+            <AlertDescription className="text-xs leading-relaxed">
+              Edite o ficheiro <code className="font-mono">.env</code> com o
+              <strong> Project URL</strong> e <strong>anon key</strong> do seu Supabase
+              Kwanzaweb (Dashboard → Settings → API). Depois, recarregue esta página.
+            </AlertDescription>
+          </Alert>
+        )}
 
         <Card className="p-5">
           <Tabs value={tab} onValueChange={(v) => setTab(v as "login" | "signup")}>
