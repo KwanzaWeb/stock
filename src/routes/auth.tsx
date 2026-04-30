@@ -38,7 +38,7 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (user) nav({ to: "/" });
+    if (user) nav({ to: "/painel" });
   }, [user, nav]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -60,7 +60,7 @@ function AuthPage() {
     try {
       await signIn(parsed.data.username, parsed.data.password);
       toast.success("Bem-vindo de volta!");
-      nav({ to: "/" });
+      nav({ to: "/painel" });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Erro ao iniciar sessão";
       toast.error(msg.includes("fetch") ? "Não foi possível ligar ao servidor. Verifique o .env." : msg);
@@ -89,7 +89,7 @@ function AuthPage() {
     try {
       await signUp(parsed.data.username, parsed.data.password, parsed.data.nomeLoja);
       toast.success("Conta criada! Bem-vindo.");
-      nav({ to: "/" });
+      nav({ to: "/painel" });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Erro ao criar conta";
       toast.error(msg.includes("fetch") ? "Não foi possível ligar ao servidor. Verifique o .env." : msg);

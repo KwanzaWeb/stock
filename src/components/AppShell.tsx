@@ -10,11 +10,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const handleLogout = async () => {
     await signOut();
-    nav({ to: "/auth" });
+    nav({ to: "/" });
   };
 
   const tabs = [
-    { to: "/", label: "Início", icon: LayoutDashboard },
+    { to: "/painel", label: "Início", icon: LayoutDashboard },
     { to: "/produtos", label: "Stock", icon: Package },
     { to: "/historico", label: "Histórico", icon: History },
     { to: "/definicoes", label: "Definições", icon: Settings },
