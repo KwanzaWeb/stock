@@ -15,7 +15,7 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1" },
       { title: "StockSimples — Gestão de Stock" },
       { name: "description", content: "Gestão de stock simples e rápida para pequenos comerciantes." },
-      { name: "theme-color", content: "#1e2a5e" },
+      { name: "theme-color", content: "#1f6b3a" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),

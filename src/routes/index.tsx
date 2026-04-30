@@ -27,6 +27,7 @@ import { useAuth } from "@/lib/auth-context";
 import { AuthForms } from "@/components/AuthForms";
 import heroImg from "@/assets/hero-inventario.jpg";
 import quemSomosImg from "@/assets/quem-somos.jpg";
+import logoImg from "@/assets/logo-stocksimples.jpeg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -68,9 +69,13 @@ function LandingPage() {
       <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-xl bg-[var(--gradient-primary)] flex items-center justify-center shadow-[var(--shadow-elegant)]">
-              <Package className="h-5 w-5 text-primary-foreground" />
-            </div>
+            <img
+              src={logoImg}
+              alt="StockSimples"
+              width={40}
+              height={40}
+              className="h-10 w-10 rounded-xl object-contain bg-white shadow-[var(--shadow-card)]"
+            />
             <span className="font-bold text-lg">StockSimples</span>
           </div>
           <div className="flex items-center gap-2">
@@ -111,9 +116,7 @@ function LandingPage() {
                 <DialogContent className="sm:max-w-md">
                   <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                      <div className="h-9 w-9 rounded-xl bg-[var(--gradient-primary)] flex items-center justify-center">
-                        <Package className="h-5 w-5 text-primary-foreground" />
-                      </div>
+                      <img src={logoImg} alt="StockSimples" className="h-9 w-9 rounded-xl object-contain bg-white" />
                       Aceder à conta
                     </DialogTitle>
                     <DialogDescription>
@@ -295,9 +298,7 @@ function LandingPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <div className="h-9 w-9 rounded-xl bg-[var(--gradient-primary)] flex items-center justify-center">
-                <Package className="h-5 w-5 text-primary-foreground" />
-              </div>
+              <img src={logoImg} alt="StockSimples" className="h-9 w-9 rounded-xl object-contain bg-white" />
               Aceder à conta
             </DialogTitle>
             <DialogDescription>
