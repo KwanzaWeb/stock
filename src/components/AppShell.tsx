@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { LayoutDashboard, Package, History, Settings, LogOut } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
+import logoImg from "@/assets/logo-stocksimples.jpeg";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { signOut, user } = useAuth();
@@ -25,9 +26,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-30 bg-primary text-primary-foreground shadow-[var(--shadow-card)]">
         <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary-foreground/15 flex items-center justify-center font-bold">
-              S
-            </div>
+            <img
+              src={logoImg}
+              alt="StockSimples"
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-lg bg-white object-contain p-0.5"
+            />
             <div className="leading-tight">
               <h1 className="font-semibold text-base">StockSimples</h1>
               <p className="text-[11px] text-primary-foreground/70 truncate max-w-[180px]">
