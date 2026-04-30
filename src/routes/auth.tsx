@@ -133,8 +133,8 @@ function AuthPage() {
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="space-y-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="login-email">Email</Label>
-                  <Input id="login-email" name="email" type="email" autoComplete="email" required />
+                  <Label htmlFor="login-username">Nome de utilizador</Label>
+                  <Input id="login-username" name="username" type="text" autoComplete="username" required maxLength={40} />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="login-password">Palavra-passe</Label>
