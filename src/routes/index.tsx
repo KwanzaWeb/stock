@@ -1,157 +1,366 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Link } from "@tanstack/react-router";
-import { useMemo } from "react";
-import { Package, TrendingUp, AlertTriangle, ArrowRight } from "lucide-react";
-import { RequireAuth } from "@/components/RequireAuth";
-import { AppShell } from "@/components/AppShell";
-import { Card } from "@/components/ui/card";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import {
+  Package,
+  TrendingUp,
+  ShieldCheck,
+  Sparkles,
+  Target,
+  Eye,
+  Users,
+  ArrowRight,
+  CheckCircle2,
+  BarChart3,
+  Bell,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useProdutos } from "@/lib/queries";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { useAuth } from "@/lib/auth-context";
+import { AuthForms } from "@/components/AuthForms";
+import heroImg from "@/assets/hero-inventario.jpg";
+import quemSomosImg from "@/assets/quem-somos.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Painel — StockSimples" },
-      { name: "description", content: "Resumo do seu stock e alertas críticos." },
+      { title: "StockSimples — Gestão de stock simples e inteligente" },
+      {
+        name: "description",
+        content:
+          "Controle o inventário da sua loja com simplicidade. Alertas automáticos, relatórios via WhatsApp e visão clara do seu negócio.",
+      },
+      { property: "og:title", content: "StockSimples — Gestão de stock para o seu negócio" },
+      {
+        property: "og:description",
+        content: "Inventário organizado, alertas críticos e relatórios diários no WhatsApp.",
+      },
     ],
   }),
-  component: () => (
-    <RequireAuth>
-      <AppShell>
-        <Dashboard />
-      </AppShell>
-    </RequireAuth>
-  ),
+  component: LandingPage,
 });
 
-function formatKz(v: number) {
-  return new Intl.NumberFormat("pt-PT", {
-    style: "currency",
-    currency: "AOA",
-    maximumFractionDigits: 0,
-  }).format(v);
-}
+function LandingPage() {
+  const { user, loading } = useAuth();
+  const nav = useNavigate();
+  const [authOpen, setAuthOpen] = useState(false);
+  const [defaultTab, setDefaultTab] = useState<"login" | "signup">("login");
 
-function Dashboard() {
-  const { data: produtos, isLoading } = useProdutos();
+  useEffect(() => {
+    if (!loading && user) nav({ to: "/painel" });
+  }, [loading, user, nav]);
 
-  const stats = useMemo(() => {
-    const list = produtos ?? [];
-    const total = list.length;
-    const valor = list.reduce((s, p) => s + p.quantidade_atual * Number(p.preco_venda), 0);
-    const criticos = list.filter((p) => p.quantidade_atual <= p.alerta_minimo);
-    return { total, valor, criticos };
-  }, [produtos]);
+  const openAuth = (tab: "login" | "signup") => {
+    setDefaultTab(tab);
+    setAuthOpen(true);
+  };
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-bold text-foreground">Painel</h2>
-        <p className="text-sm text-muted-foreground">Resumo do seu negócio hoje</p>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <StatCard
-          icon={<Package className="h-5 w-5" />}
-          label="Produtos"
-          value={isLoading ? null : String(stats.total)}
-        />
-        <StatCard
-          icon={<TrendingUp className="h-5 w-5" />}
-          label="Valor stock"
-          value={isLoading ? null : formatKz(stats.valor)}
-          accent
-        />
-      </div>
-
-      <Card className="p-4">
-        <div className="flex items-center justify-between mb-3">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border">
+        <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-destructive/10 flex items-center justify-center">
-              <AlertTriangle className="h-4 w-4 text-destructive" />
+            <div className="h-9 w-9 rounded-xl bg-[var(--gradient-primary)] flex items-center justify-center shadow-[var(--shadow-elegant)]">
+              <Package className="h-5 w-5 text-primary-foreground" />
             </div>
-            <h3 className="font-semibold">Alertas críticos</h3>
+            <span className="font-bold text-lg">StockSimples</span>
           </div>
-          {stats.criticos.length > 0 && (
-            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-destructive text-destructive-foreground">
-              {stats.criticos.length}
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={() => openAuth("login")}>
+              Entrar
+            </Button>
+            <Button size="sm" onClick={() => openAuth("signup")}>
+              Criar conta
+            </Button>
+          </div>
         </div>
+      </header>
 
-        {isLoading ? (
-          <div className="space-y-2">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-          </div>
-        ) : stats.criticos.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-4 text-center">
-            Tudo em ordem — nenhum produto abaixo do mínimo. ✓
-          </p>
-        ) : (
-          <ul className="space-y-2">
-            {stats.criticos.slice(0, 5).map((p) => (
-              <li
-                key={p.id}
-                className="flex items-center justify-between py-2 px-3 rounded-lg bg-destructive/5 border border-destructive/20"
-              >
-                <div className="min-w-0">
-                  <p className="font-medium text-sm truncate">{p.nome}</p>
-                  <p className="text-xs text-destructive">
-                    {p.quantidade_atual} em stock · mín {p.alerta_minimo}
-                  </p>
-                </div>
-                <Link to="/produtos">
-                  <Button size="sm" variant="ghost" className="text-destructive">
-                    <ArrowRight className="h-4 w-4" />
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-[var(--gradient-subtle)]">
+        <div className="mx-auto max-w-6xl px-4 py-12 md:py-20 grid md:grid-cols-2 gap-10 items-center">
+          <div className="space-y-5">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-primary/10 text-primary">
+              <Sparkles className="h-3.5 w-3.5" />
+              Gestão de stock para pequenos negócios
+            </span>
+            <h1 className="text-4xl md:text-5xl font-bold leading-tight text-foreground">
+              Stock <span className="text-primary">Simples</span>.<br />
+              Negócio mais forte.
+            </h1>
+            <p className="text-base md:text-lg text-muted-foreground max-w-md">
+              Controle o inventário da sua loja em minutos. Receba alertas de stock
+              crítico e envie relatórios diários de vendas direto no WhatsApp do dono.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <Dialog open={authOpen} onOpenChange={setAuthOpen}>
+                <DialogTrigger asChild>
+                  <Button size="lg" onClick={() => setDefaultTab("signup")} className="text-base">
+                    Começar grátis
+                    <ArrowRight className="h-4 w-4 ml-1" />
                   </Button>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <div className="h-9 w-9 rounded-xl bg-[var(--gradient-primary)] flex items-center justify-center">
+                        <Package className="h-5 w-5 text-primary-foreground" />
+                      </div>
+                      Aceder à conta
+                    </DialogTitle>
+                    <DialogDescription>
+                      Entre ou crie a sua conta StockSimples.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <AuthFormsWithDefault
+                    defaultTab={defaultTab}
+                    onSuccess={() => setAuthOpen(false)}
+                  />
+                </DialogContent>
+              </Dialog>
+              <Button size="lg" variant="outline" onClick={() => openAuth("login")}>
+                Já tenho conta
+              </Button>
+            </div>
+            <div className="flex items-center gap-4 pt-2 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <CheckCircle2 className="h-4 w-4 text-success" />
+                Sem cartão
+              </span>
+              <span className="flex items-center gap-1">
+                <CheckCircle2 className="h-4 w-4 text-success" />
+                100% online
+              </span>
+            </div>
+          </div>
 
-      <Link to="/produtos">
-        <Button className="w-full" size="lg">
-          Gerir stock
-        </Button>
-      </Link>
+          <div className="relative">
+            <div className="absolute -inset-4 bg-[var(--gradient-primary)] opacity-20 blur-3xl rounded-full" />
+            <img
+              src={heroImg}
+              alt="Aplicação StockSimples a mostrar inventário num tablet e telemóvel"
+              width={1280}
+              height={896}
+              className="relative rounded-2xl shadow-[var(--shadow-elegant)] w-full h-auto"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="mx-auto max-w-6xl px-4 py-16">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl md:text-3xl font-bold">Tudo o que precisa, num só lugar</h2>
+          <p className="text-muted-foreground mt-2">
+            Ferramentas pensadas para quem gere lojas reais, todos os dias.
+          </p>
+        </div>
+        <div className="grid md:grid-cols-3 gap-4">
+          <FeatureCard
+            icon={<Package className="h-5 w-5" />}
+            title="Inventário organizado"
+            text="Adicione produtos, registe entradas e saídas com um toque."
+          />
+          <FeatureCard
+            icon={<Bell className="h-5 w-5" />}
+            title="Alertas críticos"
+            text="Saiba exatamente quando um produto está a acabar."
+          />
+          <FeatureCard
+            icon={<BarChart3 className="h-5 w-5" />}
+            title="Relatórios no WhatsApp"
+            text="Envie o resumo do dia direto ao dono com um clique."
+          />
+          <FeatureCard
+            icon={<TrendingUp className="h-5 w-5" />}
+            title="Valor de stock"
+            text="Veja em tempo real quanto vale o seu inventário."
+          />
+          <FeatureCard
+            icon={<ShieldCheck className="h-5 w-5" />}
+            title="Seguro e privado"
+            text="Os seus dados são seus. Acesso protegido por conta."
+          />
+          <FeatureCard
+            icon={<Sparkles className="h-5 w-5" />}
+            title="Simples de usar"
+            text="Pensado para vendedores, não para programadores."
+          />
+        </div>
+      </section>
+
+      {/* Missão / Visão / Quem somos */}
+      <section className="bg-[var(--gradient-subtle)]">
+        <div className="mx-auto max-w-6xl px-4 py-16 space-y-12">
+          <div className="grid md:grid-cols-3 gap-4">
+            <PillarCard
+              icon={<Target className="h-5 w-5" />}
+              title="Missão"
+              text="Tornar a gestão de stock simples e acessível a qualquer pequeno negócio, sem complicações técnicas."
+            />
+            <PillarCard
+              icon={<Eye className="h-5 w-5" />}
+              title="Visão"
+              text="Ser o parceiro digital de confiança de cada loja de bairro, ajudando-as a crescer com dados claros."
+            />
+            <PillarCard
+              icon={<Users className="h-5 w-5" />}
+              title="Valores"
+              text="Simplicidade, transparência e proximidade. Construímos a pensar em quem está no balcão todos os dias."
+            />
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-10 items-center">
+            <div>
+              <img
+                src={quemSomosImg}
+                alt="Lojista a verificar o stock num tablet"
+                width={1024}
+                height={768}
+                loading="lazy"
+                className="rounded-2xl shadow-[var(--shadow-card)] w-full h-auto"
+              />
+            </div>
+            <div className="space-y-4">
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-primary/10 text-primary">
+                <Users className="h-3.5 w-3.5" /> Quem somos
+              </span>
+              <h2 className="text-2xl md:text-3xl font-bold">
+                Feito para lojistas, por quem entende o terreno
+              </h2>
+              <p className="text-muted-foreground">
+                A StockSimples nasceu da experiência real de pequenos comerciantes que
+                perdiam vendas por falta de produto, ou tempo a contar caixas no fim do
+                dia. Construímos uma ferramenta clara, rápida e que cabe no telemóvel —
+                porque é onde o negócio acontece.
+              </p>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-success shrink-0 mt-0.5" />
+                  <span>Interface pensada para uso diário, sem formação.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-success shrink-0 mt-0.5" />
+                  <span>Relatórios automáticos para o dono via WhatsApp.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-success shrink-0 mt-0.5" />
+                  <span>Funciona em qualquer telemóvel, tablet ou computador.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Final */}
+      <section className="mx-auto max-w-6xl px-4 py-16">
+        <Card className="p-8 md:p-12 text-center bg-[var(--gradient-primary)] text-primary-foreground border-0 shadow-[var(--shadow-elegant)]">
+          <h2 className="text-2xl md:text-3xl font-bold">Comece hoje. É grátis.</h2>
+          <p className="mt-2 text-primary-foreground/85 max-w-xl mx-auto">
+            Crie a sua conta em menos de um minuto e organize o stock da sua loja já.
+          </p>
+          <Button
+            size="lg"
+            variant="secondary"
+            className="mt-6"
+            onClick={() => openAuth("signup")}
+          >
+            Criar conta grátis
+            <ArrowRight className="h-4 w-4 ml-1" />
+          </Button>
+        </Card>
+      </section>
+
+      <footer className="border-t border-border">
+        <div className="mx-auto max-w-6xl px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <Package className="h-4 w-4 text-primary" />
+            <span className="font-semibold text-foreground">StockSimples</span>
+          </div>
+          <p>© {new Date().getFullYear()} StockSimples. Todos os direitos reservados.</p>
+        </div>
+      </footer>
+
+      {/* Auth dialog (controlled outside hero CTA too) */}
+      <Dialog open={authOpen} onOpenChange={setAuthOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <div className="h-9 w-9 rounded-xl bg-[var(--gradient-primary)] flex items-center justify-center">
+                <Package className="h-5 w-5 text-primary-foreground" />
+              </div>
+              Aceder à conta
+            </DialogTitle>
+            <DialogDescription>
+              Entre ou crie a sua conta StockSimples.
+            </DialogDescription>
+          </DialogHeader>
+          <AuthFormsWithDefault
+            defaultTab={defaultTab}
+            onSuccess={() => setAuthOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
-function StatCard({
+function FeatureCard({
   icon,
-  label,
-  value,
-  accent,
+  title,
+  text,
 }: {
   icon: React.ReactNode;
-  label: string;
-  value: string | null;
-  accent?: boolean;
+  title: string;
+  text: string;
 }) {
   return (
-    <Card
-      className={`p-4 ${accent ? "bg-[var(--gradient-primary)] text-primary-foreground border-0" : ""}`}
-    >
-      <div
-        className={`h-9 w-9 rounded-lg flex items-center justify-center mb-2 ${
-          accent ? "bg-primary-foreground/15" : "bg-primary/10 text-primary"
-        }`}
-      >
+    <Card className="p-5 hover:shadow-[var(--shadow-elegant)] transition-shadow">
+      <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
         {icon}
       </div>
-      <p className={`text-xs ${accent ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
-        {label}
-      </p>
-      {value === null ? (
-        <Skeleton className="h-7 w-20 mt-1" />
-      ) : (
-        <p className="text-xl font-bold mt-0.5 truncate">{value}</p>
-      )}
+      <h3 className="font-semibold mb-1">{title}</h3>
+      <p className="text-sm text-muted-foreground">{text}</p>
     </Card>
   );
+}
+
+function PillarCard({
+  icon,
+  title,
+  text,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  text: string;
+}) {
+  return (
+    <Card className="p-6 bg-card">
+      <div className="h-11 w-11 rounded-xl bg-[var(--gradient-primary)] text-primary-foreground flex items-center justify-center mb-3 shadow-[var(--shadow-elegant)]">
+        {icon}
+      </div>
+      <h3 className="text-lg font-bold mb-1">{title}</h3>
+      <p className="text-sm text-muted-foreground">{text}</p>
+    </Card>
+  );
+}
+
+function AuthFormsWithDefault({
+  defaultTab,
+  onSuccess,
+}: {
+  defaultTab: "login" | "signup";
+  onSuccess: () => void;
+}) {
+  // Re-mount AuthForms when tab changes to apply default
+  return <AuthForms key={defaultTab} onSuccess={onSuccess} initialTab={defaultTab} />;
 }
