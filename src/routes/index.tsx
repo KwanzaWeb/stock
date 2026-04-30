@@ -319,6 +319,45 @@ function LandingPage() {
   );
 }
 
+const FRASES = [
+  "Cada venda começa com organização.",
+  "Pequenos passos, grandes negócios.",
+  "Onde há controlo, há crescimento.",
+  "O teu negócio merece o teu melhor.",
+  "Stock organizado, mente tranquila.",
+  "Hoje contas caixas. Amanhã contas vitórias.",
+  "Empreender é transformar esforço em conquista.",
+  "Quem mede, cresce.",
+];
+
+function InspirationOverlay() {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setI((v) => (v + 1) % FRASES.length), 5000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div className="absolute inset-x-0 bottom-0 p-5 md:p-7">
+      <p
+        key={i}
+        className="text-white text-lg md:text-2xl font-semibold leading-snug drop-shadow-lg animate-in fade-in slide-in-from-bottom-2 duration-700"
+      >
+        “{FRASES[i]}”
+      </p>
+      <div className="mt-3 flex gap-1.5">
+        {FRASES.map((_, idx) => (
+          <span
+            key={idx}
+            className={`h-1 rounded-full transition-all ${
+              idx === i ? "w-6 bg-white" : "w-2 bg-white/40"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function FeatureCard({
   icon,
   title,
