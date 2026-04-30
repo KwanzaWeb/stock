@@ -139,7 +139,6 @@ function Historico() {
           onClick={handleSubmeter}
           variant="secondary"
           className="w-full mt-3"
-          disabled={vendasHoje.length === 0}
         >
           <Send className="h-4 w-4 mr-2" />
           Submeter relatório do dia
