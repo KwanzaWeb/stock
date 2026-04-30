@@ -77,7 +77,7 @@ function AuthPage() {
     }
     const fd = new FormData(e.currentTarget);
     const parsed = signupSchema.safeParse({
-      email: fd.get("email"),
+      username: fd.get("username"),
       password: fd.get("password"),
       nomeLoja: fd.get("nomeLoja"),
     });
@@ -87,7 +87,7 @@ function AuthPage() {
     }
     setBusy(true);
     try {
-      await signUp(parsed.data.email, parsed.data.password, parsed.data.nomeLoja);
+      await signUp(parsed.data.username, parsed.data.password, parsed.data.nomeLoja);
       toast.success("Conta criada! Bem-vindo.");
       nav({ to: "/" });
     } catch (err: unknown) {
