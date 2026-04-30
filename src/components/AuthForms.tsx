@@ -18,10 +18,16 @@ const signupSchema = loginSchema.extend({
   nomeLoja: z.string().trim().min(2, "Nome muito curto").max(80),
 });
 
-export function AuthForms({ onSuccess }: { onSuccess?: () => void }) {
+export function AuthForms({
+  onSuccess,
+  initialTab = "login",
+}: {
+  onSuccess?: () => void;
+  initialTab?: "login" | "signup";
+}) {
   const { signIn, signUp } = useAuth();
   const nav = useNavigate();
-  const [tab, setTab] = useState<"login" | "signup">("login");
+  const [tab, setTab] = useState<"login" | "signup">(initialTab);
   const [busy, setBusy] = useState(false);
 
   const goAfter = () => {

@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProdutosRouteImport } from './routes/produtos'
+import { Route as PainelRouteImport } from './routes/painel'
 import { Route as HistoricoRouteImport } from './routes/historico'
 import { Route as DefinicoesRouteImport } from './routes/definicoes'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -18,6 +19,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const ProdutosRoute = ProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PainelRoute = PainelRouteImport.update({
+  id: '/painel',
+  path: '/painel',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HistoricoRoute = HistoricoRouteImport.update({
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/definicoes': typeof DefinicoesRoute
   '/historico': typeof HistoricoRoute
+  '/painel': typeof PainelRoute
   '/produtos': typeof ProdutosRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/definicoes': typeof DefinicoesRoute
   '/historico': typeof HistoricoRoute
+  '/painel': typeof PainelRoute
   '/produtos': typeof ProdutosRoute
 }
 export interface FileRoutesById {
@@ -61,14 +69,28 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/definicoes': typeof DefinicoesRoute
   '/historico': typeof HistoricoRoute
+  '/painel': typeof PainelRoute
   '/produtos': typeof ProdutosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/definicoes' | '/historico' | '/produtos'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/definicoes'
+    | '/historico'
+    | '/painel'
+    | '/produtos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/definicoes' | '/historico' | '/produtos'
-  id: '__root__' | '/' | '/auth' | '/definicoes' | '/historico' | '/produtos'
+  to: '/' | '/auth' | '/definicoes' | '/historico' | '/painel' | '/produtos'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/definicoes'
+    | '/historico'
+    | '/painel'
+    | '/produtos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,6 +98,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   DefinicoesRoute: typeof DefinicoesRoute
   HistoricoRoute: typeof HistoricoRoute
+  PainelRoute: typeof PainelRoute
   ProdutosRoute: typeof ProdutosRoute
 }
 
@@ -86,6 +109,13 @@ declare module '@tanstack/react-router' {
       path: '/produtos'
       fullPath: '/produtos'
       preLoaderRoute: typeof ProdutosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/painel': {
+      id: '/painel'
+      path: '/painel'
+      fullPath: '/painel'
+      preLoaderRoute: typeof PainelRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/historico': {
@@ -124,6 +154,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   DefinicoesRoute: DefinicoesRoute,
   HistoricoRoute: HistoricoRoute,
+  PainelRoute: PainelRoute,
   ProdutosRoute: ProdutosRoute,
 }
 export const routeTree = rootRouteImport
