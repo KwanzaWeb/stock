@@ -44,23 +44,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (username: string, password: string) => {
+    const email = usernameToEmail(username);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
   };
 
-  const signUp = async (email: string, password: string, nomeLoja: string) => {
+  const signUp = async (username: string, password: string, nomeLoja: string) => {
+    const email = usernameToEmail(username);
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: window.location.origin,
-        data: { nome_loja: nomeLoja },
+        data: { nome_loja: nomeLoja, username: username.trim() },
       },
     });
     if (error) throw error;
-    // Se a confirmação por email estiver desativada, já existe sessão.
-    // Caso contrário, tentamos iniciar sessão imediatamente.
     if (!data.session) {
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
       if (signInError) throw signInError;
