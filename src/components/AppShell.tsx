@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, Package, History, LogOut } from "lucide-react";
+import { LayoutDashboard, Package, History, Settings, LogOut } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 
@@ -17,6 +17,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     { to: "/", label: "Início", icon: LayoutDashboard },
     { to: "/produtos", label: "Stock", icon: Package },
     { to: "/historico", label: "Histórico", icon: History },
+    { to: "/definicoes", label: "Definições", icon: Settings },
   ] as const;
 
   return (
@@ -48,7 +49,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <main className="flex-1 mx-auto w-full max-w-3xl px-4 py-4">{children}</main>
 
       <nav className="fixed bottom-0 left-0 right-0 z-30 md:static md:max-w-3xl md:mx-auto md:mt-0 bg-card border-t md:border-t-0 md:border md:rounded-2xl md:my-4 md:shadow-[var(--shadow-card)]">
-        <div className="grid grid-cols-3">
+        <div className="grid grid-cols-4">
           {tabs.map(({ to, label, icon: Icon }) => {
             const active = pathname === to;
             return (
