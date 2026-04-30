@@ -58,7 +58,7 @@ function AuthPage() {
     }
     setBusy(true);
     try {
-      await signIn(parsed.data.email, parsed.data.password);
+      await signIn(parsed.data.username, parsed.data.password);
       toast.success("Bem-vindo de volta!");
       nav({ to: "/" });
     } catch (err: unknown) {
