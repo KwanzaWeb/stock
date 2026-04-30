@@ -49,7 +49,7 @@ function AuthPage() {
     }
     const fd = new FormData(e.currentTarget);
     const parsed = loginSchema.safeParse({
-      email: fd.get("email"),
+      username: fd.get("username"),
       password: fd.get("password"),
     });
     if (!parsed.success) {
