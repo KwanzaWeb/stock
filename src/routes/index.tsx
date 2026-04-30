@@ -147,13 +147,17 @@ function LandingPage() {
 
           <div className="relative">
             <div className="absolute -inset-4 bg-[var(--gradient-primary)] opacity-20 blur-3xl rounded-full" />
-            <img
-              src={heroImg}
-              alt="Aplicação StockSimples a mostrar inventário num tablet e telemóvel"
-              width={1280}
-              height={896}
-              className="relative rounded-2xl shadow-[var(--shadow-elegant)] w-full h-auto"
-            />
+            <div className="relative">
+              <img
+                src={heroImg}
+                alt="Aplicação StockSimples a mostrar inventário num tablet e telemóvel"
+                width={1280}
+                height={896}
+                className="rounded-2xl shadow-[var(--shadow-elegant)] w-full h-auto"
+              />
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+              <InspirationOverlay />
+            </div>
           </div>
         </div>
       </section>
