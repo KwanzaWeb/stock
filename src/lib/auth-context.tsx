@@ -6,10 +6,23 @@ type AuthCtx = {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, nomeLoja: string) => Promise<void>;
+  signIn: (username: string, password: string) => Promise<void>;
+  signUp: (username: string, password: string, nomeLoja: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
+
+// Converte um nome de utilizador num email interno aceite pelo Supabase Auth.
+// O utilizador nunca vê este email — é apenas um detalhe de implementação.
+function usernameToEmail(username: string): string {
+  const slug = username
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, ".")
+    .replace(/^\.+|\.+$/g, "");
+  return `${slug}@stocksimples.local`;
+}
 
 const Ctx = createContext<AuthCtx | undefined>(undefined);
 
@@ -31,23 +44,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (username: string, password: string) => {
+    const email = usernameToEmail(username);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
   };
 
-  const signUp = async (email: string, password: string, nomeLoja: string) => {
+  const signUp = async (username: string, password: string, nomeLoja: string) => {
+    const email = usernameToEmail(username);
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: window.location.origin,
-        data: { nome_loja: nomeLoja },
+        data: { nome_loja: nomeLoja, username: username.trim() },
       },
     });
     if (error) throw error;
-    // Se a confirmação por email estiver desativada, já existe sessão.
-    // Caso contrário, tentamos iniciar sessão imediatamente.
     if (!data.session) {
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
       if (signInError) throw signInError;

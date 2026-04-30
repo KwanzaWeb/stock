@@ -24,7 +24,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 const loginSchema = z.object({
-  email: z.string().trim().email("Email inválido").max(255),
+  username: z.string().trim().min(2, "Nome muito curto").max(40),
   password: z.string().min(6, "Mínimo 6 caracteres").max(72),
 });
 const signupSchema = loginSchema.extend({
@@ -49,7 +49,7 @@ function AuthPage() {
     }
     const fd = new FormData(e.currentTarget);
     const parsed = loginSchema.safeParse({
-      email: fd.get("email"),
+      username: fd.get("username"),
       password: fd.get("password"),
     });
     if (!parsed.success) {
@@ -58,7 +58,7 @@ function AuthPage() {
     }
     setBusy(true);
     try {
-      await signIn(parsed.data.email, parsed.data.password);
+      await signIn(parsed.data.username, parsed.data.password);
       toast.success("Bem-vindo de volta!");
       nav({ to: "/" });
     } catch (err: unknown) {
@@ -77,7 +77,7 @@ function AuthPage() {
     }
     const fd = new FormData(e.currentTarget);
     const parsed = signupSchema.safeParse({
-      email: fd.get("email"),
+      username: fd.get("username"),
       password: fd.get("password"),
       nomeLoja: fd.get("nomeLoja"),
     });
@@ -87,7 +87,7 @@ function AuthPage() {
     }
     setBusy(true);
     try {
-      await signUp(parsed.data.email, parsed.data.password, parsed.data.nomeLoja);
+      await signUp(parsed.data.username, parsed.data.password, parsed.data.nomeLoja);
       toast.success("Conta criada! Bem-vindo.");
       nav({ to: "/" });
     } catch (err: unknown) {
@@ -133,8 +133,8 @@ function AuthPage() {
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="space-y-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="login-email">Email</Label>
-                  <Input id="login-email" name="email" type="email" autoComplete="email" required />
+                  <Label htmlFor="login-username">Nome de utilizador</Label>
+                  <Input id="login-username" name="username" type="text" autoComplete="username" required maxLength={40} />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="login-password">Palavra-passe</Label>
@@ -153,8 +153,8 @@ function AuthPage() {
                   <Input id="signup-loja" name="nomeLoja" required maxLength={80} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input id="signup-email" name="email" type="email" autoComplete="email" required />
+                  <Label htmlFor="signup-username">Nome de utilizador</Label>
+                  <Input id="signup-username" name="username" type="text" autoComplete="username" required maxLength={40} />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="signup-password">Palavra-passe</Label>
