@@ -153,8 +153,8 @@ function AuthPage() {
                   <Input id="signup-loja" name="nomeLoja" required maxLength={80} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input id="signup-email" name="email" type="email" autoComplete="email" required />
+                  <Label htmlFor="signup-username">Nome de utilizador</Label>
+                  <Input id="signup-username" name="username" type="text" autoComplete="username" required maxLength={40} />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="signup-password">Palavra-passe</Label>
