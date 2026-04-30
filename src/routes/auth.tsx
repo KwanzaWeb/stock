@@ -24,7 +24,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 const loginSchema = z.object({
-  email: z.string().trim().email("Email inválido").max(255),
+  username: z.string().trim().min(2, "Nome muito curto").max(40),
   password: z.string().min(6, "Mínimo 6 caracteres").max(72),
 });
 const signupSchema = loginSchema.extend({
