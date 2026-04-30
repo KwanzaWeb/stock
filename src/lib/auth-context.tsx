@@ -6,10 +6,23 @@ type AuthCtx = {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, nomeLoja: string) => Promise<void>;
+  signIn: (username: string, password: string) => Promise<void>;
+  signUp: (username: string, password: string, nomeLoja: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
+
+// Converte um nome de utilizador num email interno aceite pelo Supabase Auth.
+// O utilizador nunca vê este email — é apenas um detalhe de implementação.
+function usernameToEmail(username: string): string {
+  const slug = username
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, ".")
+    .replace(/^\.+|\.+$/g, "");
+  return `${slug}@stocksimples.local`;
+}
 
 const Ctx = createContext<AuthCtx | undefined>(undefined);
 
